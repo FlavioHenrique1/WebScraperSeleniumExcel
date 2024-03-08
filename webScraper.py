@@ -8,19 +8,51 @@ from time import sleep
 class WebScraper:
     def __init__(self):
         self.dados_tabela = []
-
+        self.cabecalhos = []
     def interar_dados(self, tabela):
 
         # Obtenha todas as linhas da tabela
         linhas = tabela.find_elements(By.TAG_NAME, 'tr')
+        # Obtenha os cabeçalhos da tabela (se houver)
+        cabecalho_linha = linhas[0]
+        celulas_cabecalho = cabecalho_linha.find_elements(By.TAG_NAME, 'th')
+        if celulas_cabecalho:
+            # Se houver células de cabeçalho, extraia o texto delas
+            self.cabecalhos = [celula.text for celula in celulas_cabecalho]
+            # Adicione os cabeçalhos à lista de dados da tabela
+            self.dados_tabela.append(self.cabecalhos)
 
         # Itere sobre as linhas e imprima o texto de cada célula
-        for linha in linhas:
+        for linha in linhas[1:]:
+
             # Obtenha todas as células da linha
             celulas = linha.find_elements(By.TAG_NAME, 'td')
-            # Inicialize uma lista para armazenar os dados da linha
-            dados_linha = [celula.text for celula in celulas]
+
             
+            if (len(celulas) > 12):
+                i=0
+            else:
+                i=1
+
+            id=celulas[0].text
+            empresa=celulas[1].text
+            loja=celulas[2].text
+            cCusto=celulas[3].text
+            descCCusto=celulas[4].text
+            pront=celulas[5].text
+            cpf=celulas[6-i].text
+            nome=celulas[7-i].text
+            telFix=celulas[8-i].text
+            telCel=celulas[9-i].text
+            adms=celulas[10-i].text
+            cargo=celulas[11-i].text
+            vaga=celulas[12-i].text
+
+            # Inicialize uma lista para armazenar os dados da linha
+            dados_linha = [id,empresa,loja,cCusto,descCCusto,pront,cpf,nome,telFix,telCel,adms,cargo,vaga]
+
+            # # Inicialize uma lista para armazenar os dados da linha
+            # dados_linha = [celula.text for celula in celulas]
             # Adicione os dados da linha à lista de dados da tabela
             self.dados_tabela.append(dados_linha)
 
@@ -77,7 +109,7 @@ class WebScraper:
         driver.quit()
 
     def get_dados_tabela(self):
-        return self.dados_tabela
+        return self.cabecalhos, self.dados_tabela
 
 # Aqui você pode continuar com o código para gravar os dados em um arquivo Excel
 # Certifique-se de que a classe Excel esteja definida como anteriormente
